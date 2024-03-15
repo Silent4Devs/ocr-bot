@@ -26,4 +26,4 @@ COPY . .
 # ENV PATH="/app:${PATH}"
 
 # # Run the Python script when the container launches
-CMD ["python", "main.py"]
+# CMD ["python", "main.py"]
