@@ -23,7 +23,7 @@ WORKDIR .
 COPY . .
 
 # Define environment variable
-# ENV PATH="/app:${PATH}"
+ENV PATH="/app:${PATH}"
 
 # # Run the Python script when the container launches
-# CMD ["python", "main.py"]
+CMD ["python", "main.py"]

@@ -68,7 +68,9 @@ def handle_pdf(message):
     bot.reply_to(message, "Text extracted from PDF:")
     # send_text_in_chunks(text, message.chat.id)
     # Send response with text file attachment
-    bot.send_document(message.chat.id, open(output_file_full_path, 'rb'))
+    #bot.send_document(message.chat.id, open(output_file_full_path, 'rb'))
+    # Send response with text file attachment
+    send_text_or_file_in_chunks(output_file_full_path, message.chat.id)
 
 @bot.message_handler(commands=['help'])
 def send_help(message):
@@ -78,6 +80,19 @@ def send_help(message):
 @bot.message_handler(func=lambda m: True)
 def echo_all(message):
     bot.reply_to(message, 'No entiendo ese comando. Por favor, usa /start o /help para obtener ayuda.')
+
+# Function to send text or file in chunks
+def send_text_or_file_in_chunks(file_path, chat_id):
+    chunk_size = 4096  # Maximum message length supported by Telegram
+    if os.path.getsize(file_path) <= chunk_size:
+        # If file size is within the limit, send it as a document
+        bot.send_document(chat_id, open(file_path, 'rb'))
+    else:
+        # If file size exceeds the limit, send text in chunks
+        with open(file_path, 'r', encoding='utf-8') as file:
+            text = file.read()
+            for i in range(0, len(text), chunk_size):
+                bot.send_message(chat_id, text[i:i + chunk_size])
 
 # Function to extract images from PDF
 def extract_images_from_pdf(pdf_bytes):
