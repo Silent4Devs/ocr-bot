@@ -37,40 +37,43 @@ def send_pdf_prompt(message):
 # Manejar archivos recibidos
 @bot.message_handler(content_types=['document'])
 def handle_pdf(message):
-    # Guardar el archivo en la carpeta de carga
-    file_info = bot.get_file(message.document.file_id)
-    downloaded_file = bot.download_file(file_info.file_path)
-    file_path = os.path.join(UPLOAD_FOLDER, message.document.file_name)
-    with open(file_path, 'wb') as new_file:
-        new_file.write(downloaded_file)
-    # Responder con el nombre del archivo recibido
-    bot.reply_to(message, f'Se recibió el archivo PDF: {message.document.file_name}')
-    bot.reply_to(message, f'Procesando...')
+    try:
+        # Guardar el archivo en la carpeta de carga
+        file_info = bot.get_file(message.document.file_id)
+        downloaded_file = bot.download_file(file_info.file_path)
+        file_path = os.path.join(UPLOAD_FOLDER, message.document.file_name)
+        with open(file_path, 'wb') as new_file:
+            new_file.write(downloaded_file)
+        # Responder con el nombre del archivo recibido
+        bot.reply_to(message, f'Se recibió el archivo PDF: {message.document.file_name}')
+        bot.reply_to(message, f'Procesando...')
 
-    # Perform OCR and save text to file
-    file_name = os.path.splitext(message.document.file_name)[0]  # Extract file name without extension
-    pdf_path = os.path.join(UPLOAD_FOLDER, message.document.file_name)
-    output_file = file_name + ".txt"
-    output_file_full_path = os.path.join(OUTPUT_FOLDER, output_file)
+        # Perform OCR and save text to file
+        file_name = os.path.splitext(message.document.file_name)[0]  # Extract file name without extension
+        pdf_path = os.path.join(UPLOAD_FOLDER, message.document.file_name)
+        output_file = file_name + ".txt"
+        output_file_full_path = os.path.join(OUTPUT_FOLDER, output_file)
 
-    # Check if the PDF file exists
-    if not os.path.isfile(pdf_path):
-        bot.reply_to(message, "Invalid PDF file path.")
-        return
-    
-    # Extract text from PDF
-    text = pdf_to_text(pdf_path)
+        # Check if the PDF file exists
+        if not os.path.isfile(pdf_path):
+            bot.reply_to(message, "Invalid PDF file path.")
+            return
+        
+        # Extract text from PDF
+        text = pdf_to_text(pdf_path)
 
-    # Write OCR text to file
-    write_ocr_text_to_file(text, output_file_full_path)
+        # Write OCR text to file
+        write_ocr_text_to_file(text, output_file_full_path)
 
-    # Send response with extracted text
-    bot.reply_to(message, "Text extracted from PDF:")
-    # send_text_in_chunks(text, message.chat.id)
-    # Send response with text file attachment
-    bot.send_document(message.chat.id, open(output_file_full_path, 'rb'))
-    # Send response with text file attachment
-    #send_text_or_file_in_chunks(output_file_full_path, message.chat.id)
+        # Send response with extracted text
+        bot.reply_to(message, "Text extracted from PDF:")
+        # send_text_in_chunks(text, message.chat.id)
+        # Send response with text file attachment
+        bot.send_document(message.chat.id, open(output_file_full_path, 'rb'))
+        # Send response with text file attachment
+        #send_text_or_file_in_chunks(output_file_full_path, message.chat.id)
+    except Exception as e:
+        bot.reply_to(message, f"Ocurrió un error: {e}")
 
 @bot.message_handler(commands=['help'])
 def send_help(message):
