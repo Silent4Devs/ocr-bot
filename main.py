@@ -68,9 +68,9 @@ def handle_pdf(message):
     bot.reply_to(message, "Text extracted from PDF:")
     # send_text_in_chunks(text, message.chat.id)
     # Send response with text file attachment
-    #bot.send_document(message.chat.id, open(output_file_full_path, 'rb'))
+    bot.send_document(message.chat.id, open(output_file_full_path, 'rb'))
     # Send response with text file attachment
-    send_text_or_file_in_chunks(output_file_full_path, message.chat.id)
+    #send_text_or_file_in_chunks(output_file_full_path, message.chat.id)
 
 @bot.message_handler(commands=['help'])
 def send_help(message):

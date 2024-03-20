@@ -1,1 +1,3 @@
+sudo docker buildx build -t ocr-converter:last .
+
 sudo docker run -d --rm ocr-converter
